@@ -2,27 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>O-Ring Dash Matcher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O-Ring Dash Finder</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; justify-content: center; padding: 40px; background: #f0f2f5; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 380px; }
-        h2 { margin: 0 0 20px 0; font-size: 1.2rem; border-bottom: 2px solid #ce1126; padding-bottom: 8px; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #666; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 40px; background: #f0f2f5; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 380px; }
+        h2 { margin: 0 0 20px 0; border-bottom: 2px solid #ce1126; padding-bottom: 8px; font-size: 1.2rem; }
+        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #666; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         .btn { width: 100%; padding: 14px; background: #ce1126; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
         #results { margin-top: 25px; text-align: center; display: none; background: #fff9f9; padding: 20px; border-radius: 8px; border: 1px solid #ffeaea; }
-        .dash-label { font-size: 12px; color: #999; font-weight: bold; }
         .dash-text { font-size: 56px; font-weight: 800; color: #333; margin: 5px 0; display: block; }
-        .mc-link { display: inline-block; margin-top: 15px; padding: 12px 20px; background: #333; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; }
-        .mc-link:hover { background: #000; }
+        .mc-link { display: inline-block; margin-top: 15px; padding: 12px 20px; background: #333; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>O-Ring Size Matcher</h2>
+    <h2>O-Ring Dash Finder</h2>
     
-    <label>Circumference / Arc Length (in)</label>
-    <input type="number" id="length" step="any" placeholder="e.g., 4.110">
+    <label>CIRCUMFERENCE (IN)</label>
+    <input type="number" id="length" step="any" placeholder="e.g. 4.110">
 
-    <label>Cross Section / Width (in)</
+    <label>CROSS SECTION (IN)</label>
+    <input type="number" id="cs" step="any" placeholder="e.g. 0.139">
+
+    <button type="button" class="btn" onclick="findDash()">IDENTIFY DASH SIZE</button>
+
+    <div id="results">
+        <div style="font-size: 12px; color: #999; font-weight: bold;">DASH NUMBER</div>
+        <span class="dash-text" id="dashOut"></span>
+        <a id="mcLink" class="mc-link" target="_blank" href="">VIEW ON MCMASTER-CARR</a>
+    </div>
+</div>
+
+<script>
+    const as568 = [
+        {d:"006", id:0.114, cs:0.070}, {d:"007", id:0.145, cs:0.070}, {d:"008", id:0.176, cs:0.070}, {d:"009", id:0.208, cs:0.070}, {d:"010", id:0.239, cs:0.070}, {d:"011", id:0.301, cs:0.070}, {d:"012", id:0.364, cs:0.070}, {d:"013", id:0.426, cs:0.070}, {d:"014", id:0.489, cs:0.070},
+        {d:"110", id:0.362, cs:0.103}, {d:"111", id:0.424, cs:0.103}, {d:"112", id:0.487, cs:0.103}, {d:"113", id:0.549, cs:0.103}, {d:"114", id:0.612, cs:0.103}, {d:"115", id:0.674, cs:0.103}, {d:"116", id:0.737, cs:0.103}, {d:"117", id:0.799, cs:0.103},
+        {d:"210", id:0.734, cs:0.139}, {d:"211", id:0.796, cs:0.139}, {d:"212", id:0.859, cs:0.139}, {d:"213", id:0.921, cs:0.139}, {d:"214", id:0.984, cs:0.139}, {d:"215", id:1.046, cs:0.139}, {d:"216", id:1.109, cs:0.139}, {d:"217", id:1.171, cs:0.139}, {d:"218", id:1.234, cs:0.139},
+        {d:"325", id:1.475, cs:0.210}, {d:"326", id:1.60
