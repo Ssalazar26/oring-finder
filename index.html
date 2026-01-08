@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional O-Ring Engineering Tool</title>
+    <title>Advanced O-Ring Engineering Tool</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { color: #333; margin-top: 0; border-bottom: 2px solid #ce1126; padding-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        :root { --mcmaster-red: #ce1126; --bg-gray: #f0f2f5; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-gray); display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 480px; }
+        h2 { color: #333; margin: 0 0 15px 0; border-bottom: 3px solid var(--mcmaster-red); padding-bottom: 8px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px; }
         .input-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; color: #555; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fff; }
         .unit-toggle { background: #eee; padding: 5px; border-radius: 6px; display: flex; margin-bottom: 20px; }
-        .unit-toggle button { flex: 1; border: none; padding: 8px; cursor: pointer; border-radius: 4px; background: transparent; transition: 0.3s; }
+        .unit-toggle button { flex: 1; border: none; padding: 8px; cursor: pointer; border-radius: 4px; background: transparent; transition: 0.2s; }
         .unit-toggle button.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; }
-        .search-btn { width: 100%; padding: 12px; background: #ce1126; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-top: 10px; }
-        .search-btn:hover { background: #a00d1e; }
-        #results { margin-top: 20px; padding: 15px; background: #fff4f4; border-left: 5px solid #ce1126; border-radius: 4px; display: none; }
-        .stretch-val { float: right; color: #ce1126; font-weight: bold; }
+        .search-btn { width: 100%; padding: 14px; background: var(--mcmaster-red); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 10px; transition: filter 0.2s; }
+        .search-btn:hover { filter: brightness(0.9); }
+        #results { margin-top: 20px; padding: 18px; background: #fff4f4; border-left: 5px solid var(--mcmaster-red); border-radius: 4px; display: none; }
+        .u { font-weight: bold; color: var(--mcmaster-red); }
         .hidden { display: none; }
-        .hint { font-size: 0.75rem; color: #777; margin-top: 4px; }
-        .u { font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>O-Ring Engineer Pro</h2>
+    <h2>O-Ring Spec Finder</h2>
     
     <div class="unit-toggle">
         <button id="btnIn" class="active" onclick="setUnit('in')">Imperial (in)</button>
@@ -43,11 +42,12 @@
             </select>
         </div>
         <div class="input-group">
-            <label>Shore Hardness</label>
-            <select id="shore">
-                <option value="70A">70A (Standard)</option>
-                <option value="50A">50A (Soft)</option>
-                <option value="90A">90A (Hard)</option>
+            <label>Material</label>
+            <select id="material">
+                <option value="Buna-N">Buna-N (Standard)</option>
+                <option value="Viton">Viton (Chem Resistant)</option>
+                <option value="Silicone">Silicone (High Temp)</option>
+                <option value="EPDM">EPDM (Water/Steam)</option>
             </select>
         </div>
     </div>
@@ -68,17 +68,90 @@
         <input type="number" id="arcAngle" placeholder="e.g. 180">
     </div>
 
-    <div class="input-group">
-        <label>Stretch Factor <span class="stretch-val" id="stretchDisp">2%</span></label>
-        <input type="range" id="stretch" min="0" max="10" step="0.5" value="2" oninput="updateStretchDisp()">
-        <div class="hint">Recommended: 1-5% for static seals.</div>
+    <div class="grid">
+        <div class="input-group">
+            <label>Hardness (Durometer)</label>
+            <select id="shore">
+                <option value="70A">70A (Medium)</option>
+                <option value="50A">50A (Soft)</option>
+                <option value="90A">90A (Hard)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Stretch %</label>
+            <input type="number" id="stretch" value="2" step="0.5">
+        </div>
     </div>
 
-    <button class="search-btn" onclick="calculate()">Find on McMaster-Carr</button>
+    <button class="search-btn" onclick="calculate()">Search McMaster-Carr</button>
 
     <div id="results">
-        <div style="font-size: 0.8rem; color: #666;">Calculated Groove ID: <span id="grooveID"></span><span class="u">in</span></div>
-        <strong>Required O-Ring ID:</strong><br>
-        <span id="calcID" style="font-size: 1.4rem; color: #ce1126;"></span> <span class="u" id="resultUnit">in</span>
-        <div style="margin-top:12px;">
-            <a id="mcLink" target="_blank"
+        <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">
+            Target O-Ring ID: <strong><span id="calcID"></span> <span class="u">in</span></strong>
+        </div>
+        <div style="font-size: 0.75rem; color: #888; margin-bottom: 15px;">
+            Groove ID (No Stretch): <span id="grooveID"></span> <span class="u">in</span>
+        </div>
+        <a id="mcLink" target="_blank" style="display: block; text-align: center; background: #333; color: white; padding: 10px; border-radius: 4px; text-decoration: none; font-weight: bold;" href="#">View Filtered Catalog ↗</a>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'in';
+
+    function setUnit(unit) {
+        currentUnit = unit;
+        document.getElementById('btnIn').classList.toggle('active', unit === 'in');
+        document.getElementById('btnMm').classList.toggle('active', unit === 'mm');
+        document.querySelectorAll('.u').forEach(el => el.innerText = unit);
+    }
+
+    function toggleInputs() {
+        const isPartial = document.getElementById('arcType').value === 'partial';
+        document.getElementById('angleContainer').classList.toggle('hidden', !isPartial);
+        document.getElementById('lengthLabel').innerText = isPartial ? "Arc Length" : "Full Circumference";
+    }
+
+    function calculate() {
+        const s = parseFloat(document.getElementById('arcLength').value);
+        const cs = parseFloat(document.getElementById('crossSection').value);
+        const stretchPct = parseFloat(document.getElementById('stretch').value) / 100;
+        const type = document.getElementById('arcType').value;
+        const mat = document.getElementById('material').value;
+        const shore = document.getElementById('shore').value;
+        
+        if (!s || !cs) return alert("Please fill in basic dimensions.");
+
+        let circumference = s;
+        if (type === 'partial') {
+            const angle = parseFloat(document.getElementById('arcAngle').value);
+            if (!angle || angle <= 0) return alert("Please enter valid angle.");
+            circumference = s * (360 / angle);
+        }
+
+        // 1. Groove ID
+        const grooveID = (circumference / Math.PI) - cs;
+        // 2. Ring ID with Stretch
+        const ringID = grooveID / (1 + stretchPct);
+        const finalID = ringID.toFixed(3);
+
+        document.getElementById('grooveID').innerText = grooveID.toFixed(3);
+        document.getElementById('calcID').innerText = finalID;
+        document.getElementById('results').style.display = 'block';
+
+        // 3. SECURE SEARCH LINK
+        // We use the 'srch' parameter combined with specific keywords. 
+        // This lands the user on the search results page with filters applied.
+        const unitSymbol = currentUnit === 'in' ? '"' : 'mm';
+        const searchString = `${finalID}${unitSymbol} ID ${cs}${unitSymbol} width ${mat} ${shore} O-ring`;
+        
+        // McMaster uses this specific URL structure for direct keyword searches:
+        const baseUrl = "https://www.mcmaster.com/products/o-rings/rrelevance/query/";
+        const finalUrl = baseUrl + encodeURIComponent(searchString);
+        
+        document.getElementById('mcLink').href = finalUrl;
+    }
+</script>
+
+</body>
+</html>
