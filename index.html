@@ -21,6 +21,7 @@
         .stretch-val { float: right; color: #ce1126; font-weight: bold; }
         .hidden { display: none; }
         .hint { font-size: 0.75rem; color: #777; margin-top: 4px; }
+        .u { font-weight: bold; }
     </style>
 </head>
 <body>
@@ -44,9 +45,9 @@
         <div class="input-group">
             <label>Shore Hardness</label>
             <select id="shore">
-                <option value="70a">70A (Standard)</option>
-                <option value="50a">50A (Soft)</option>
-                <option value="90a">90A (Hard)</option>
+                <option value="70A">70A (Standard)</option>
+                <option value="50A">50A (Soft)</option>
+                <option value="90A">90A (Hard)</option>
             </select>
         </div>
     </div>
@@ -70,75 +71,14 @@
     <div class="input-group">
         <label>Stretch Factor <span class="stretch-val" id="stretchDisp">2%</span></label>
         <input type="range" id="stretch" min="0" max="10" step="0.5" value="2" oninput="updateStretchDisp()">
-        <div class="hint">Standard is 1-3%. Max recommended 5%.</div>
+        <div class="hint">Recommended: 1-5% for static seals.</div>
     </div>
 
     <button class="search-btn" onclick="calculate()">Find on McMaster-Carr</button>
 
     <div id="results">
         <div style="font-size: 0.8rem; color: #666;">Calculated Groove ID: <span id="grooveID"></span><span class="u">in</span></div>
-        <strong>O-Ring ID (With Stretch):</strong><br>
-        <span id="calcID" style="font-size: 1.4rem; color: #ce1126;"></span> <span class="u">in</span>
+        <strong>Required O-Ring ID:</strong><br>
+        <span id="calcID" style="font-size: 1.4rem; color: #ce1126;"></span> <span class="u" id="resultUnit">in</span>
         <div style="margin-top:12px;">
-            <a id="mcLink" target="_blank" style="color: #ce1126; text-decoration: none; font-weight: bold; border-bottom: 1px solid;" href="#">Open Search &rarr;</a>
-        </div>
-    </div>
-</div>
-
-<script>
-    let currentUnit = 'in';
-
-    function setUnit(unit) {
-        currentUnit = unit;
-        document.getElementById('btnIn').classList.toggle('active', unit === 'in');
-        document.getElementById('btnMm').classList.toggle('active', unit === 'mm');
-        document.querySelectorAll('.u').forEach(el => el.innerText = unit);
-    }
-
-    function toggleInputs() {
-        const isPartial = document.getElementById('arcType').value === 'partial';
-        document.getElementById('angleContainer').classList.toggle('hidden', !isPartial);
-        document.getElementById('lengthLabel').innerText = isPartial ? "Arc Length" : "Full Circumference";
-    }
-
-    function updateStretchDisp() {
-        document.getElementById('stretchDisp').innerText = document.getElementById('stretch').value + "%";
-    }
-
-    function calculate() {
-        const s = parseFloat(document.getElementById('arcLength').value);
-        const cs = parseFloat(document.getElementById('crossSection').value);
-        const stretchPct = parseFloat(document.getElementById('stretch').value) / 100;
-        const type = document.getElementById('arcType').value;
-        const shore = document.getElementById('shore').value;
-        
-        if (!s || !cs) return alert("Please fill in basic dimensions.");
-
-        let circumference = s;
-        if (type === 'partial') {
-            const angle = parseFloat(document.getElementById('arcAngle').value);
-            if (!angle) return alert("Please enter the arc angle.");
-            circumference = s * (360 / angle);
-        }
-
-        // 1. Calculate Actual Groove ID
-        const grooveID = (circumference / Math.PI) - cs;
-        
-        // 2. Apply Stretch: O-Ring ID = Groove ID / (1 + stretch)
-        const ringID = grooveID / (1 + stretchPct);
-
-        // Update UI
-        document.getElementById('grooveID').innerText = grooveID.toFixed(3);
-        document.getElementById('calcID').innerText = ringID.toFixed(3);
-        document.getElementById('results').style.display = 'block';
-
-        // URL Generation
-        const unitSuffix = currentUnit === 'mm' ? 'mm' : 'in';
-        const baseUrl = "https://www.mcmaster.com/products/o-rings/";
-        const query = `hardness~durometer-${shore}/id~${ringID.toFixed(3)}${unitSuffix}/`;
-        document.getElementById('mcLink').href = baseUrl + query;
-    }
-</script>
-
-</body>
-</html>
+            <a id="mcLink" target="_blank"
