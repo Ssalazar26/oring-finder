@@ -2,81 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AS568 O-Ring Dash Finder</title>
+    <title>O-Ring Dash Matcher</title>
     <style>
-        :root { --mc-red: #ce1126; --dark: #333; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h2 { margin: 0 0 15px 0; color: var(--dark); border-bottom: 3px solid var(--mc-red); padding-bottom: 10px; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        label { display: block; font-size: 0.8rem; font-weight: bold; color: #666; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 16px; background: var(--mc-red); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; }
-        #results { margin-top: 20px; padding: 20px; background: #fffde7; border: 1px solid #fbc02d; border-radius: 10px; display: none; text-align: center; }
-        .dash-display { font-size: 2.5rem; font-weight: bold; color: var(--mc-red); display: block; margin: 5px 0; }
-        .spec-list { text-align: left; font-size: 0.9rem; margin: 15px 0; color: #444; border-top: 1px solid #ddd; padding-top: 10px; }
-        .mc-btn { display: inline-block; background: #333; color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; margin-top: 10px; }
-        .hidden { display: none; }
+        body { font-family: -apple-system, sans-serif; display: flex; justify-content: center; padding: 40px; background: #f0f2f5; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 380px; }
+        h2 { margin: 0 0 20px 0; font-size: 1.2rem; border-bottom: 2px solid #ce1126; padding-bottom: 8px; }
+        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #666; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        .btn { width: 100%; padding: 14px; background: #ce1126; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        #results { margin-top: 25px; text-align: center; display: none; background: #fff9f9; padding: 20px; border-radius: 8px; border: 1px solid #ffeaea; }
+        .dash-label { font-size: 12px; color: #999; font-weight: bold; }
+        .dash-text { font-size: 56px; font-weight: 800; color: #333; margin: 5px 0; display: block; }
+        .mc-link { display: inline-block; margin-top: 15px; padding: 12px 20px; background: #333; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; }
+        .mc-link:hover { background: #000; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>AS568 Dash Finder</h2>
+    <h2>O-Ring Size Matcher</h2>
     
-    <div class="row">
-        <div>
-            <label>Measure Type</label>
-            <select id="mode" onchange="toggleMode()">
-                <option value="full">Full Circle</option>
-                <option value="partial">Partial Arc</option>
-            </select>
-        </div>
-        <div>
-            <label>Stretch %</label>
-            <input type="number" id="stretch" value="2" step="0.5">
-        </div>
-    </div>
+    <label>Circumference / Arc Length (in)</label>
+    <input type="number" id="length" step="any" placeholder="e.g., 4.110">
 
-    <div class="row">
-        <div>
-            <label id="lenLabel">Circumference (in)</label>
-            <input type="number" id="length" placeholder="e.g. 6.28" step="any">
-        </div>
-        <div>
-            <label>Cross Section (in)</label>
-            <input type="number" id="cs" placeholder="e.g. 0.103" step="any">
-        </div>
-    </div>
-
-    <div id="angleDiv" class="row hidden">
-        <div style="grid-column: span 2;">
-            <label>Arc Angle (Degrees)</label>
-            <input type="number" id="angle" placeholder="180">
-        </div>
-    </div>
-
-    <button class="btn" onclick="findORing()">IDENTIFY DASH SIZE</button>
-
-    <div id="results">
-        <span style="font-weight: bold; color: #555;">IDENTIFIED SIZE:</span>
-        <span class="dash-display" id="dashOut">-XXX</span>
-        
-        <div class="spec-list">
-            <div>• Target ID (w/ stretch): <b id="targetID"></b>"</div>
-            <div>• Standard Part ID: <b id="matchID"></b>"</div>
-            <div>• Standard Part Width: <b id="matchCS"></b>"</div>
-        </div>
-
-        <a id="mcLink" class="mc-btn" target="_blank" href="#">Search McMaster for this Dash #</a>
-    </div>
-</div>
-
-<script>
-    // Comprehensive AS568 Database (Common Industrial Series)
-    const as568Data = [
-        // 000 Series (0.070" CS)
-        {d:"006", id:0.114, cs:0.070}, {d:"007", id:0.145, cs:0.070}, {d:"008", id:0.176, cs:0.070}, {d:"009", id:0.208, cs:0.070}, {d:"010", id:0.239, cs:0.070}, {d:"011", id:0.301, cs:0.070}, {d:"012", id:0.364, cs:0.070}, {d:"013", id:0.426, cs:0.070}, {d:"014", id:0.489, cs:0.070},
-        // 100 Series (0.103" CS)
-        {d:"110
+    <label>Cross Section / Width (in)</
