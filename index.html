@@ -3,151 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-Ring Spec Finder</title>
+    <title>AS568 O-Ring Dash Finder</title>
     <style>
-        :root { --mc-red: #ce1126; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f7f9; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { margin: 0 0 20px 0; color: #333; border-bottom: 3px solid var(--mc-red); padding-bottom: 10px; }
+        :root { --mc-red: #ce1126; --dark: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { margin: 0 0 15px 0; color: var(--dark); border-bottom: 3px solid var(--mc-red); padding-bottom: 10px; }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         label { display: block; font-size: 0.8rem; font-weight: bold; color: #666; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        .unit-toggle { display: flex; background: #eee; padding: 4px; border-radius: 8px; margin-bottom: 20px; }
-        .unit-toggle button { flex: 1; border: none; padding: 8px; cursor: pointer; border-radius: 6px; background: transparent; font-weight: bold; }
-        .unit-toggle button.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); color: var(--mc-red); }
-        .calc-btn { width: 100%; padding: 16px; background: var(--mc-red); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
-        .calc-btn:active { transform: scale(0.98); }
-        #results { margin-top: 20px; padding: 15px; background: #fff5f5; border-radius: 8px; border: 1px solid #ffdada; display: none; text-align: center; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 16px; background: var(--mc-red); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+        #results { margin-top: 20px; padding: 20px; background: #fffde7; border: 1px solid #fbc02d; border-radius: 10px; display: none; text-align: center; }
+        .dash-display { font-size: 2.5rem; font-weight: bold; color: var(--mc-red); display: block; margin: 5px 0; }
+        .spec-list { text-align: left; font-size: 0.9rem; margin: 15px 0; color: #444; border-top: 1px solid #ddd; padding-top: 10px; }
+        .mc-btn { display: inline-block; background: #333; color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; margin-top: 10px; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>O-Ring Spec Finder</h2>
+    <h2>AS568 Dash Finder</h2>
     
-    <div class="unit-toggle">
-        <button id="btnIn" class="active" onclick="setUnit('in')">INCHES</button>
-        <button id="btnMm" onclick="setUnit('mm')">METRIC (mm)</button>
-    </div>
-
     <div class="row">
         <div>
-            <label>Measurement</label>
+            <label>Measure Type</label>
             <select id="mode" onchange="toggleMode()">
                 <option value="full">Full Circle</option>
                 <option value="partial">Partial Arc</option>
             </select>
         </div>
         <div>
-            <label>Material</label>
-            <select id="material">
-                <option value="Buna-N">Buna-N</option>
-                <option value="Viton">Viton (FKM)</option>
-                <option value="Silicone">Silicone</option>
-                <option value="EPDM">EPDM</option>
-            </select>
+            <label>Stretch %</label>
+            <input type="number" id="stretch" value="2" step="0.5">
         </div>
     </div>
 
     <div class="row">
         <div>
-            <label id="lenLabel">Circumference</label>
-            <input type="number" id="length" placeholder="0.000" step="any">
+            <label id="lenLabel">Circumference (in)</label>
+            <input type="number" id="length" placeholder="e.g. 6.28" step="any">
         </div>
         <div>
-            <label>Cross Section</label>
-            <input type="number" id="cs" placeholder="0.000" step="any">
+            <label>Cross Section (in)</label>
+            <input type="number" id="cs" placeholder="e.g. 0.103" step="any">
         </div>
     </div>
 
     <div id="angleDiv" class="row hidden">
         <div style="grid-column: span 2;">
             <label>Arc Angle (Degrees)</label>
-            <input type="number" id="angle" placeholder="e.g. 180">
+            <input type="number" id="angle" placeholder="180">
         </div>
     </div>
 
-    <div class="row">
-        <div>
-            <label>Hardness</label>
-            <select id="shore">
-                <option value="70A">70A</option>
-                <option value="50A">50A</option>
-                <option value="90A">90A</option>
-            </select>
-        </div>
-        <div>
-            <label>Stretch %</label>
-            <input type="number" id="stretch" value="2">
-        </div>
-    </div>
-
-    <button class="calc-btn" onclick="runTool()">FIND ON MCMASTER-CARR</button>
+    <button class="btn" onclick="findORing()">IDENTIFY DASH SIZE</button>
 
     <div id="results">
-        <p style="margin:0; font-size: 0.9rem; color: #666;">Suggested O-Ring ID:</p>
-        <h1 id="outID" style="margin: 5px 0; color: var(--mc-red);">0.000</h1>
-        <p id="outDetails" style="font-size: 0.8rem; color: #999;"></p>
-        <p style="font-size: 0.7rem; color: #ce1126;">Clicking button again will refresh search.</p>
+        <span style="font-weight: bold; color: #555;">IDENTIFIED SIZE:</span>
+        <span class="dash-display" id="dashOut">-XXX</span>
+        
+        <div class="spec-list">
+            <div>• Target ID (w/ stretch): <b id="targetID"></b>"</div>
+            <div>• Standard Part ID: <b id="matchID"></b>"</div>
+            <div>• Standard Part Width: <b id="matchCS"></b>"</div>
+        </div>
+
+        <a id="mcLink" class="mc-btn" target="_blank" href="#">Search McMaster for this Dash #</a>
     </div>
 </div>
 
 <script>
-    let unit = 'in';
-
-    function setUnit(u) {
-        unit = u;
-        document.getElementById('btnIn').className = (u === 'in' ? 'active' : '');
-        document.getElementById('btnMm').className = (u === 'mm' ? 'active' : '');
-    }
-
-    function toggleMode() {
-        const isPartial = document.getElementById('mode').value === 'partial';
-        document.getElementById('angleDiv').classList.toggle('hidden', !isPartial);
-        document.getElementById('lenLabel').innerText = isPartial ? 'Arc Length' : 'Circumference';
-    }
-
-    function runTool() {
-        const len = parseFloat(document.getElementById('length').value);
-        const cs = parseFloat(document.getElementById('cs').value);
-        const str = parseFloat(document.getElementById('stretch').value) / 100;
-        const mode = document.getElementById('mode').value;
-        const mat = document.getElementById('material').value;
-        const hardness = document.getElementById('shore').value;
-
-        if (!len || !cs) {
-            alert("Please enter Length and Cross Section");
-            return;
-        }
-
-        let circ = len;
-        if (mode === 'partial') {
-            const deg = parseFloat(document.getElementById('angle').value);
-            if (!deg) { alert("Enter arc angle"); return; }
-            circ = len * (360 / deg);
-        }
-
-        // Calculations
-        const grooveID = (circ / Math.PI) - cs;
-        const ringID = grooveID / (1 + str);
-        const finalID = ringID.toFixed(3);
-
-        // Update UI
-        document.getElementById('outID').innerText = finalID + (unit === 'in' ? '"' : 'mm');
-        document.getElementById('outDetails').innerText = `Groove: ${grooveID.toFixed(3)}${unit} | Stretch: ${document.getElementById('stretch').value}%`;
-        document.getElementById('results').style.display = 'block';
-
-        // Search Logic
-        const uSym = (unit === 'in' ? '"' : 'mm');
-        // Search Query: "1.250" ID 0.103" width Buna-N 70A O-ring"
-        const query = `${finalID}${uSym} ID ${cs}${uSym} width ${mat} ${hardness} O-ring`;
-        const url = "https://www.mcmaster.com/products/o-rings/relevance/query/" + encodeURIComponent(query);
-
-        // Open in new tab
-        window.open(url, '_blank');
-    }
-</script>
-
-</body>
-</html>
+    // Comprehensive AS568 Database (Common Industrial Series)
+    const as568Data = [
+        // 000 Series (0.070" CS)
+        {d:"006", id:0.114, cs:0.070}, {d:"007", id:0.145, cs:0.070}, {d:"008", id:0.176, cs:0.070}, {d:"009", id:0.208, cs:0.070}, {d:"010", id:0.239, cs:0.070}, {d:"011", id:0.301, cs:0.070}, {d:"012", id:0.364, cs:0.070}, {d:"013", id:0.426, cs:0.070}, {d:"014", id:0.489, cs:0.070},
+        // 100 Series (0.103" CS)
+        {d:"110
